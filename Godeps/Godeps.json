@@ -1,0 +1,33 @@
+{
+	"ImportPath": "github.com/norlanliu/sregister",
+	"GoVersion": "go1.5.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/coreos/etcd/client",
+			"Comment": "v2.3.0-alpha.0-54-g08dc70c",
+			"Rev": "08dc70cc0f636987f364b322b8fd57cdd029c873"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/pathutil",
+			"Comment": "v2.3.0-alpha.0-54-g08dc70c",
+			"Rev": "08dc70cc0f636987f364b322b8fd57cdd029c873"
+		},
+		{
+			"ImportPath": "github.com/coreos/etcd/pkg/types",
+			"Comment": "v2.3.0-alpha.0-54-g08dc70c",
+			"Rev": "08dc70cc0f636987f364b322b8fd57cdd029c873"
+		},
+		{
+			"ImportPath": "github.com/golang/glog",
+			"Rev": "fca8c8854093a154ff1eb580aae10276ad6b1b5f"
+		},
+		{
+			"ImportPath": "github.com/ugorji/go/codec",
+			"Rev": "1a8bf87a90ddcdc7deaa0038f127ac62135fdd58"
+		},
+		{
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "1d9fd3b8333e891c0e7353e1adcfe8a612573033"
+		}
+	]
+}

@@ -1,0 +1,18 @@
+{
+	"name": "your_tcp_service_name",
+	"host": "127.0.0.1", 
+	"port": 9001,
+	"weight": 2,
+	"reporterType": "etcd",
+	"reporterHosts": ["http://10.10.31.28:2379","http://10.10.31.29:2379","http://10.10.31.30:2379"],
+	"reporterPath": "/sfinder/services/your_tcp_service",
+	"checkInterval": 2,
+	"checks": [
+		{
+			"type": "tcp",
+			"timeout": 200,
+			"rise": 3,
+			"fall": 2
+		}
+	]
+}

@@ -1,0 +1,18 @@
+{
+	"name": "service_name"
+	"host": "1.2.3.4", 
+	"port": 8000,
+	"reporterType": "etcd",
+	"reporterHosts": ["http://10.10.31.28:2379","http://10.10.31.29:2379","http://10.10.31.30:2379"],
+	"reporterPath": "/sfinder/services/your_http_service",
+	"checkInterval": 2,
+	"checks": [
+	{
+		"type": "http",
+		"uri": "/health",
+		"timeout": 0.2,
+		"rise": 3,
+		"fall": 2
+	}
+	]
+}

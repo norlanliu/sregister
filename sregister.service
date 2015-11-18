@@ -1,0 +1,14 @@
+[Unit]
+Description=SRegister/SFinder
+After=network.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/sfinder/sregister/sregister.conf
+User=root
+# set GOMAXPROCS to number of processors
+ExecStart=/bin/bash -c "GOMAXPROCS=$(nproc) /usr/bin/sregister"
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
