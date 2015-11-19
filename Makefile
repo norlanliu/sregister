@@ -9,6 +9,7 @@ GO = go
 
 DEFAULT_LOG_DIR = /var/lib/sfinder/sregister/log
 DEFAULT_CONF_DIR = /etc/sfinder/sregister
+DEFAULT_SERVICES_CONF_DIR = /etc/sfinder/sregister/services
 DST_BIN_DIR = /usr/bin/
 SYSTEMD_FILE_DIR = /usr/lib/systemd/system
 SYSTEMD_CONF_DIR = /etc/systemd/system/multi-user.target.wants
@@ -26,6 +27,7 @@ build: clean
 install:
 	${MKDIR_P} ${DEFAULT_LOG_DIR}
 	${MKDIR_P} ${DEFAULT_CONF_DIR}
+	${MKDIR_P} ${DEFAULT_SERVICES_CONF_DIR}
 	${RM_F} ${DEFAULT_CONF_DIR}/${DEFAULT_CONF_FILE}
 	${RM_F} ${SYSTEMD_FILE_DIR}/${SYSTEMD_UNIT_FILE}
 	${RM_F} ${SYSTEMD_CONF_DIR}/${SYSTEMD_UNIT_FILE}
