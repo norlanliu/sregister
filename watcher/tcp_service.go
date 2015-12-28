@@ -31,6 +31,8 @@ type tcpService struct {
 
 	host    string
 	port    int
+	uri     string
+	expect  string
 	timeout time.Duration
 }
 

@@ -20,53 +20,42 @@
 package watcher
 
 import (
-	"bufio"
 	"fmt"
-	"net"
+	"net/http"
+	"net/http/httptest"
+	"net/url"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 )
 
-func server(port int, done chan bool) {
+func TestHttpUp(t *testing.T) {
 
-	// listen on all interfaces
-	ln, _ := net.Listen("tcp", ":"+strconv.Itoa(port))
+	fmt.Println("Test: test http service up...")
 
-	defer ln.Close()
-	// run loop forever (or until ctrl-c)
-	for {
-		select {
-		case <-done:
-			return
-		default:
-		}
-		// accept connection on port
-		conn, _ := ln.Accept()
-		// will listen for message to process ending in newline (\n)
-		message, _ := bufio.NewReader(conn).ReadString('\n')
-		// sample process for string received
-		newmessage := strings.ToUpper(message)
-		// send new string back to client
-		conn.Write([]byte(newmessage + "\n"))
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "ok")
+	}))
+
+	u, err := url.Parse(server.URL)
+	if err != nil {
+		t.Fatalf("Watcher: http service watcher parse url failed")
 	}
-}
-func TestUp(t *testing.T) {
 
-	fmt.Println("Test: test tcp service up...")
+	qi := strings.Index(u.Host, ":")
 
 	name := "test_service"
-	host := "localhost"
-	port := 9900
+	host := u.Host[:qi]
+	port, _ := strconv.Atoi(u.Host[qi+1:])
 
 	check := make(map[string]interface{})
 	check["rise"] = 3.0
 	check["fall"] = 2.0
+	check["uri"] = ""
+	check["expect"] = "ok"
 
-	done := make(chan bool)
-	go server(port, done)
-
-	ts := &tcpService{}
+	ts := &httpService{}
 	ts.newService(name, host, port, check)
 
 	for i := 0; i < 100; i++ {
@@ -77,7 +66,10 @@ func TestUp(t *testing.T) {
 		}
 	}
 
-	close(done)
+	//close http server
+	server.Close()
+	time.Sleep(2 * time.Second)
+
 	ans := true
 	for i := 0; i < 10; i++ {
 		ans = ts.up()

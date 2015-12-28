@@ -21,7 +21,8 @@ package watcher
 
 import (
 	"github.com/golang/glog"
-	"net"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"time"
 )
@@ -29,55 +30,73 @@ import (
 type httpService struct {
 	base service
 
-	host    string
-	port    int
-	timeout time.Duration
+	url    string
+	expect string
+	client http.Client
 }
 
-func (ts *httpService) newService(name string, host string, port int, check map[string]interface{}) {
+func (hs *httpService) newService(name string, host string, port int, check map[string]interface{}) {
 
-	ts.host = host
-	ts.port = port
-	ts.base.name = name
+	url := "http://"
+	url += host
+	url += ":" + strconv.Itoa(port)
+	hs.base.name = name
 
-	ts.base.fall = 1
-	ts.base.rise = 1
-
-	ts.timeout = 100 * time.Millisecond
+	hs.base.fall = 1
+	hs.base.rise = 1
 
 	if _, exist := check["fall"]; exist {
-		ts.base.fall = int(check["fall"].(float64))
+		hs.base.fall = int(check["fall"].(float64))
 	}
 	if _, exist := check["rise"]; exist {
-		ts.base.rise = int(check["rise"].(float64))
+		hs.base.rise = int(check["rise"].(float64))
 	}
+
+	timeout := 100 * time.Millisecond
 	if _, exist := check["timeout"]; exist {
-		ts.timeout = time.Duration(int(check["timeout"].(float64))) * time.Millisecond
+		timeout = time.Duration(int(check["timeout"].(float64))) * time.Millisecond
+	}
+
+	if _, exist := check["uri"]; exist {
+		url += check["uri"].(string)
+	}
+
+	hs.url = url
+	if _, exist := check["expect"]; exist {
+		hs.expect = check["expect"].(string)
+	}
+
+	hs.client = http.Client{
+		Timeout: timeout,
 	}
 
 	bufferSize := 1
-	if ts.base.fall > ts.base.rise {
-		bufferSize = ts.base.fall
-	} else if ts.base.rise > 0 {
-		bufferSize = ts.base.rise
+	if hs.base.fall > hs.base.rise {
+		bufferSize = hs.base.fall
+	} else if hs.base.rise > 0 {
+		bufferSize = hs.base.rise
 	}
-	ts.base.resultBuffer = make([]bool, 0, bufferSize)
+	hs.base.resultBuffer = make([]bool, 0, bufferSize)
 }
 
-func (ts *httpService) up() bool {
-	address := ts.host + ":" + strconv.Itoa(ts.port)
-
-	conn, err := net.DialTimeout("tcp", address, ts.timeout)
+func (hs *httpService) up() bool {
+	resp, err := hs.client.Get(hs.url)
 
 	checkResult := false
 	if err != nil {
-		glog.Infof("SRegister: connect to tcp service %s error %v", address, err)
+		glog.Infof("SRegister: get http service %s error %v", hs.url, err)
 		checkResult = false
+	} else {
+		body, berr := ioutil.ReadAll(resp.Body)
+		if berr != nil || string(body) != hs.expect {
+			glog.Infof("SRegister: get http service %s wrong, wanted %s, got %s", hs.url, hs.expect, string(body))
+			checkResult = false
+		} else {
+			checkResult = true
+		}
 	}
-	defer conn.Close()
-	checkResult = true
 
-	result := ts.base.check(checkResult)
+	result := hs.base.check(checkResult)
 
 	return result
 }

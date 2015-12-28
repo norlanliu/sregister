@@ -7,12 +7,13 @@
 	"reporterPath": "/sfinder/services/your_http_service",
 	"checkInterval": 2,
 	"checks": [
-	{
-		"type": "http",
-		"uri": "/health",
-		"timeout": 0.2,
-		"rise": 3,
-		"fall": 2
-	}
+		{
+			"type": "http",
+			"uri": "/health",
+			"expect": "ok",
+			"timeout": 0.2,
+			"rise": 3,
+			"fall": 2
+		}
 	]
 }

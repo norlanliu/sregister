@@ -157,5 +157,4 @@ func LaunchWatcher(servicePath string) (chan bool, error) {
 	} else {
 		return nil, err
 	}
-
 }

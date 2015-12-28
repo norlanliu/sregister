@@ -33,7 +33,7 @@ type EtcdReporter struct {
 	value      string
 }
 
-func (erepoter *EtcdReporter) NewReporter(sc *configuration.ServiceConf) error {
+func (ereporter *EtcdReporter) NewReporter(sc *configuration.ServiceConf) error {
 	config := client.Config{
 		Endpoints: sc.ReporterHosts,
 		Transport: client.DefaultTransport,
@@ -44,12 +44,12 @@ func (erepoter *EtcdReporter) NewReporter(sc *configuration.ServiceConf) error {
 		glog.Flush()
 		return err
 	} else {
-		erepoter.etcdClient = client.NewKeysAPI(c)
+		ereporter.etcdClient = client.NewKeysAPI(c)
 	}
 
-	erepoter.path = "/"
+	ereporter.path = "/"
 	if sc.ReporterPath != "" {
-		erepoter.path = sc.ReporterPath
+		ereporter.path = sc.ReporterPath
 	}
 
 	str, derr := getServiceData(sc)
@@ -58,59 +58,59 @@ func (erepoter *EtcdReporter) NewReporter(sc *configuration.ServiceConf) error {
 		glog.Flush()
 		return derr
 	}
-	erepoter.value = str
-	erepoter.key = ""
+	ereporter.value = str
+	ereporter.key = ""
 
 	return nil
 }
 
-func (erepoter *EtcdReporter) ReportUp() {
-	if erepoter.key == "" {
+func (ereporter *EtcdReporter) ReportUp() {
+	if ereporter.key == "" {
 		cioOptions := client.CreateInOrderOptions{}
-		response, err := erepoter.etcdClient.CreateInOrder(context.Background(), erepoter.path, erepoter.value, &cioOptions)
+		response, err := ereporter.etcdClient.CreateInOrder(context.Background(), ereporter.path, ereporter.value, &cioOptions)
 		if err != nil {
-			glog.Errorf("SRegister: reporter create key %s in order failed. Error: %v", erepoter.path, err)
+			glog.Errorf("SRegister: reporter create key %s in order failed. Error: %v", ereporter.path, err)
 			glog.Flush()
 		} else {
-			erepoter.key = response.Node.Key
-			glog.Infof("SRegister: reporter create key %s with value %s succeeded.", erepoter.key, erepoter.value)
+			ereporter.key = response.Node.Key
+			glog.Infof("SRegister: reporter create key %s with value %s succeeded.", ereporter.key, ereporter.value)
 		}
 	} else {
 		setOpt := client.SetOptions{}
-		_, err := erepoter.etcdClient.Set(context.Background(), erepoter.key, erepoter.value, &setOpt)
+		_, err := ereporter.etcdClient.Set(context.Background(), ereporter.key, ereporter.value, &setOpt)
 		if err != nil {
-			glog.Errorf("SRegister: reporter set key %s failed. Error: %v", erepoter.key, err)
+			glog.Errorf("SRegister: reporter set key %s failed. Error: %v", ereporter.key, err)
 			glog.Flush()
 		} else {
-			glog.Infof("SRegister: reporter set key %s with value %s succeeded.", erepoter.key, erepoter.value)
+			glog.Infof("SRegister: reporter set key %s with value %s succeeded.", ereporter.key, ereporter.value)
 		}
 	}
 }
 
-func (erepoter *EtcdReporter) ReportDown() {
-	if erepoter.key != "" {
+func (ereporter *EtcdReporter) ReportDown() {
+	if ereporter.key != "" {
 		opt := client.DeleteOptions{}
-		_, err := erepoter.etcdClient.Delete(context.Background(), erepoter.key, &opt)
+		_, err := ereporter.etcdClient.Delete(context.Background(), ereporter.key, &opt)
 
 		if err != nil {
 			realErr, ok := err.(client.Error)
 			if !ok || realErr.Code != client.ErrorCodeKeyNotFound {
-				glog.Errorf("SRegister: reporter delete key %s failed. Error: %v", erepoter.key, err)
+				glog.Errorf("SRegister: reporter delete key %s failed. Error: %v", ereporter.key, err)
 				glog.Flush()
 				return
 			}
 		}
-		erepoter.key = ""
-		glog.Infof("SRegister: reporter delete key %s succeeded.", erepoter.key)
+		ereporter.key = ""
+		glog.Infof("SRegister: reporter delete key %s succeeded.", ereporter.key)
 	}
 }
-func (erepoter *EtcdReporter) Ping() bool {
-	_, err := erepoter.etcdClient.Get(context.Background(), erepoter.key, &client.GetOptions{})
+func (ereporter *EtcdReporter) Ping() bool {
+	_, err := ereporter.etcdClient.Get(context.Background(), ereporter.key, &client.GetOptions{})
 
 	return err == nil
 }
 
-func (erepoter *EtcdReporter) Close() {
+func (ereporter *EtcdReporter) Close() {
 	glog.Infof("SRegister: close reporter")
-	erepoter.ReportDown()
+	ereporter.ReportDown()
 }
