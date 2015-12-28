@@ -1,6 +1,6 @@
 {
-	"name": "service_name"
-	"host": "1.2.3.4", 
+	"name": "http_service_name",
+	"host": "127.0.0.1", 
 	"port": 8000,
 	"reporterType": "etcd",
 	"reporterHosts": ["http://10.10.31.28:2379","http://10.10.31.29:2379","http://10.10.31.30:2379"],
@@ -11,7 +11,7 @@
 			"type": "http",
 			"uri": "/health",
 			"expect": "ok",
-			"timeout": 0.2,
+			"timeout": 200,
 			"rise": 3,
 			"fall": 2
 		}

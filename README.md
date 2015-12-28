@@ -7,6 +7,7 @@ actully is another wheel similar with [Smartstack][1], SRegister is analagous to
 it monitor the service and report to [ETCD][2] with the address and port of the service.
 
 ## Installation
+**Please make sure your go version is beyong 1.5**
 
 Get the source code using the command:
 > $ go get github.com/norlanliu/sregister
@@ -25,10 +26,12 @@ Then, start sregister
 1.Redhat/Centos/Fedora
 start the sregister with systemctl
 > $ systemctl enable sregister; systemctl start sregister
+
 > $ systemctl status sregister
 
 2.Debain/Ubuntu
 > $ sregister -h		# get the help
+
 > $ sudo sregister &
 
 ## Configuration
@@ -53,7 +56,7 @@ The configuration contains the following options:
 [3]: https://github.com/airbnb/nerve
 
 # TODO
-1. add http service watcher
+~~1. add http service watcher~~
 2. add mysql service watcher
 3. add docker servcie watcher
 4. support [Zookeeper](http://zookeeper.apache.org/)

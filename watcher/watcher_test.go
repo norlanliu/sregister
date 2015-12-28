@@ -64,6 +64,33 @@ func TestParseServiceJson(t *testing.T) {
 	fmt.Println("... PASS")
 }
 
+func TestParseHttpJson(t *testing.T) {
+	fmt.Println("Test: parse http service json...")
+
+	jsonFilePath := "../example/services/http_service.json"
+	sc := &configuration.ServiceConf{}
+
+	checks, err := parseServiceJson(jsonFilePath, sc)
+
+	if err != nil {
+		t.Fatalf("parse json file error: %v.", err)
+	}
+
+	if sc.ReporterType != "etcd" {
+		t.Fatalf("parse http json file failed. wanted: etcd, got: %s", sc.ReporterType)
+	}
+
+	if len(checks) == 1 {
+		data := checks[0].(*httpService)
+		if data.expect != "ok" {
+			t.Fatalf("parse json file error, wanted: ok, got: %s", data.expect)
+		}
+	} else {
+		t.Fatalf("parse json file error, no checks")
+	}
+
+	fmt.Println("... PASS")
+}
 func tcpServer(server string, port int, done chan bool) {
 
 	// listen on all interfaces
