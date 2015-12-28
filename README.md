@@ -9,26 +9,27 @@ it monitor the service and report to [ETCD][2] with the address and port of the 
 ## Installation
 
 Get the source code using the command:
-$ go get github.com/norlanliu/sregister
+> $ go get github.com/norlanliu/sregister
 
 go to the sregister directory
-$ cd src/github.com/norlanliu/sregisater
+> $ cd src/github.com/norlanliu/sregisater
 
 make the source code
-$ make
+> $ make
 
 install
-$ sudo make install
+> $ sudo make install
 
 Then, start sregister
-1. Redhat/Centos/Fedora
-start the sregister with systemctl
-$ systemctl enable sregister; systemctl start sregister
-$ systemctl status sregister
 
-2. Debain/Ubuntu
-$ sregister -h		# get the help
-$ sudo sregister &
+1.Redhat/Centos/Fedora
+start the sregister with systemctl
+> $ systemctl enable sregister; systemctl start sregister
+> $ systemctl status sregister
+
+2.Debain/Ubuntu
+> $ sregister -h		# get the help
+> $ sudo sregister &
 
 ## Configuration
 The default application configuration file of SRegister is at `/etc/sfinder/sregister/sregister.conf`
